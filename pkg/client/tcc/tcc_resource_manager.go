@@ -30,6 +30,7 @@ func InitTCCResourceManager() {
 	tccResourceManager = TCCResourceManager{
 		AbstractResourceManager: rm.NewAbstractResourceManager(rpc_client.GetRpcRemoteClient()),
 	}
+	// todo 消费来自tc的分支提交和分支回滚指令
 	go tccResourceManager.handleBranchCommit()
 	go tccResourceManager.handleBranchRollback()
 }
@@ -55,6 +56,7 @@ func (resourceManager TCCResourceManager) BranchCommit(branchType meta.BranchTyp
 	businessActionContext := getBusinessActionContext(xid, branchID, resourceID, applicationData)
 	args := make([]interface{}, 0)
 	args = append(args, businessActionContext)
+	// todo 收到tc的branch commit指令时，调用service的commit方法
 	returnValues := proxy.Invoke(tccResource.CommitMethod, nil, args)
 	log.Infof("TCC resource commit result : %v, xid: %s, branchID: %d, resourceID: %s", returnValues, xid, branchID, resourceID)
 	if returnValues != nil && len(returnValues) == 1 {

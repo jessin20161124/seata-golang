@@ -1,4 +1,4 @@
-application_id: "order-svc"
+application_id: "tcc_service"
 transaction_service_group: "127.0.0.1:8091"
 enable-client-batch-send-request: true
 seata_version: "1.2.0"
@@ -22,12 +22,6 @@ getty:
 tm:
   commit_retry_count: 5
   rollback_retry_count: 5
-at:
-  dsn: "order:order_Qa1@tcp(1.15.130.58:3306)/seata_order?timeout=5s&readTimeout=5s&writeTimeout=1s&parseTime=true&loc=Local&charset=utf8mb4,utf8"
-  report_retry_count: 5
-  report_success_enable: false
-  lock_retry_interval: 10ms
-  lock_retry_times: 30
 
 registry_config:
   type: file
@@ -43,3 +37,5 @@ config_center:
     server_addr: 127.0.0.1:8848
     group: SEATA_GROUP
     cluster: default
+
+

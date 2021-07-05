@@ -103,16 +103,18 @@ func Implement(v GlobalTransactionProxyService) {
 				return proxy.ReturnWithError(methodDesc, errors.Errorf("Not Supported Propagation: %s", txInfo.Propagation.String()))
 			}
 
+			// todo 事务管理器逻辑，动态代理，将事务状态记录在tc上，如果某个环节出错，告知tc，让tc对分支事务进行回滚
 			beginErr := tx.BeginWithTimeoutAndName(txInfo.TimeOut, txInfo.Name, invCtx)
 			if beginErr != nil {
 				return proxy.ReturnWithError(methodDesc, errors.WithStack(beginErr))
 			}
 
+			// todo 调用实际业务逻辑
 			returnValues = proxy.Invoke(methodDesc, invCtx, args)
 
 			errValue := returnValues[len(returnValues)-1]
 
-			//todo 只要出错就回滚，未来可以优化一下，某些错误才回滚，某些错误的情况下，可以提交
+			//todo 拦截下来，只要出错就回滚，未来可以优化一下，某些错误才回滚，某些错误的情况下，可以提交
 			if errValue.IsValid() && !errValue.IsNil() {
 				rollbackErr := tx.Rollback(invCtx)
 				if rollbackErr != nil {
@@ -145,9 +147,11 @@ func Implement(v GlobalTransactionProxyService) {
 				continue
 			}
 
+			// todo 代理类的真正的at.createSo，tcc.TCCCommitted和tcc.TCCCanceled
 			methodDescriptor := proxy.Register(proxyService, methodName)
 
 			// do method proxy here:
+			// todo 设置代理方法
 			f.Set(reflect.MakeFunc(f.Type(), makeCallProxy(methodDescriptor, v.GetMethodTransactionInfo(methodName))))
 			log.Debugf("set method [%s]", methodName)
 		}

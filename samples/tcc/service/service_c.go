@@ -17,6 +17,7 @@ func (svc *ServiceC) Try(ctx *context.BusinessActionContext) (bool, error) {
 	word := ctx.ActionContext["hello"]
 	fmt.Println(word)
 	fmt.Println("Service C Tried!")
+	// todo 假装try返回错误
 	return true, errors.New("there is a error")
 }
 

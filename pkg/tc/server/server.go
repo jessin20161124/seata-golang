@@ -67,6 +67,7 @@ func (s *Server) newSession(session getty.Session) error {
 	session.SetName(conf.GettyConfig.GettySessionParam.SessionName)
 	session.SetMaxMsgLen(conf.GettyConfig.GettySessionParam.MaxMsgLen)
 	session.SetPkgHandler(readwriter.RpcPkgHandler)
+	// todo server rpcHandler
 	session.SetEventListener(s.rpcHandler)
 	session.SetReadTimeout(conf.GettyConfig.GettySessionParam.TcpReadTimeout)
 	session.SetWriteTimeout(conf.GettyConfig.GettySessionParam.TcpWriteTimeout)

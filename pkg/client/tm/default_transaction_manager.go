@@ -10,6 +10,7 @@ import (
 	"github.com/transaction-wg/seata-golang/pkg/client/rpc_client"
 )
 
+// TODO
 type DefaultTransactionManager struct {
 	rpcClient *rpc_client.RpcRemoteClient
 }

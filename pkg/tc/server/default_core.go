@@ -143,6 +143,7 @@ func (core *DefaultCore) Begin(applicationID string, transactionServiceGroup str
 	return gs.XID, nil
 }
 
+// todo clientID
 func (core *DefaultCore) BranchRegister(branchType meta.BranchType,
 	resourceID string,
 	clientID string,
@@ -161,6 +162,7 @@ func (core *DefaultCore) BranchRegister(branchType meta.BranchType,
 		return 0, err
 	}
 
+	// todo branchID自己生成
 	bs := session.NewBranchSessionByGlobal(*gs,
 		session.WithBsBranchType(branchType),
 		session.WithBsResourceID(resourceID),
@@ -169,6 +171,7 @@ func (core *DefaultCore) BranchRegister(branchType meta.BranchType,
 		session.WithBsClientID(clientID),
 	)
 
+	// todo at模式会加锁，如果本地事务操作的数据被其他分布式事务锁住的话，会register失败，注册失败会怎样
 	if branchType == meta.BranchTypeAT {
 		err2 := core.ATCore.branchSessionLock(gs, bs)
 		if err2 != nil {
@@ -331,6 +334,7 @@ func (core *DefaultCore) Commit(xid string) (meta.GlobalStatus, error) {
 		return globalSession.Status, nil
 	}
 
+	// todo tcc不能异步提交
 	if globalSession.CanBeCommittedAsync() {
 		asyncCommit(globalSession)
 		return meta.GlobalStatusCommitted, nil
@@ -409,6 +413,7 @@ func (core *DefaultCore) doGlobalCommit(globalSession *session.GlobalSession, re
 		}
 	}
 	if success {
+		// 修改事务为提交状态
 		endCommitted(globalSession)
 
 		runtime.GoWithRecover(func() {

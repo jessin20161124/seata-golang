@@ -90,10 +90,12 @@ func (gtx *DefaultGlobalTransaction) BeginWithTimeoutAndName(timeout int32, name
 	if ctx.InGlobalTransaction() {
 		return errors.New("xid should be empty")
 	}
+
 	xid, err := gtx.transactionManager.Begin("", "", name, timeout)
 	if err != nil {
 		return errors.WithStack(err)
 	}
+	// todo 开启了事务，新建新的xid，其他事务可以加入
 	gtx.Xid = xid
 	gtx.Status = meta.GlobalStatusBegin
 	ctx.Bind(xid)

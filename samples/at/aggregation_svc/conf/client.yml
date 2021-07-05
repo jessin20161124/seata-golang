@@ -24,7 +24,7 @@ tm:
   rollback_retry_count: 5
 
 registry_config:
-  type: nacos
+  type: file
   nacos:
     server_addr: 127.0.0.1:8848
     application: seata-server

@@ -74,6 +74,7 @@ func ImplementTCC(v TccProxyService) {
 				args = append(args, businessActionContext)
 				return proxy.Invoke(methodDesc, nil, args)
 			}
+			// todo try方法代理逻辑
 
 			returnValues, _ := proceed(methodDesc, businessActionContext, resource)
 			return returnValues
@@ -90,11 +91,13 @@ func ImplementTCC(v TccProxyService) {
 				panic("prepare method argument is not BusinessActionContext")
 			}
 
+			// todo tcc代理必须有这个tag
 			actionName := t.Tag.Get(TCC_ACTION_NAME)
 			if actionName == "" {
 				panic("must tag TccActionName")
 			}
 
+			// todo 找到实现类中真正的try/confirm/cancel方法
 			commitMethodDesc := proxy.Register(proxyService, CONFIRM_METHOD)
 			cancelMethodDesc := proxy.Register(proxyService, CANCEL_METHOD)
 			tryMethodDesc := proxy.Register(proxyService, methodName)
@@ -124,6 +127,7 @@ func proceed(methodDesc *proxy.MethodDescriptor, ctx *context.BusinessActionCont
 		args = make([]interface{}, 0)
 	)
 
+	// todo tcc没有begin/commit/rollback，只是添加个branch_table???
 	branchID, err := doTccActionLogStore(ctx, resource)
 	if err != nil {
 		return nil, errors.WithStack(err)
@@ -131,6 +135,7 @@ func proceed(methodDesc *proxy.MethodDescriptor, ctx *context.BusinessActionCont
 	ctx.BranchID = branchID
 
 	args = append(args, ctx)
+	// todo 反射执行原来业务逻辑
 	returnValues := proxy.Invoke(methodDesc, nil, args)
 
 	return returnValues, nil

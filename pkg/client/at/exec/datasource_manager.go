@@ -53,6 +53,7 @@ func (resourceManager DataSourceManager) LockQuery(branchType meta.BranchType, r
 	return response.Lockable, nil
 }
 
+// todo 两个核心操作
 func (resourceManager DataSourceManager) BranchCommit(branchType meta.BranchType, xid string, branchID int64,
 	resourceID string, applicationData []byte) (meta.BranchStatus, error) {
 	//todo 改为异步批量操作

@@ -184,6 +184,7 @@ func GetColumns(tx *Tx, tableName string) ([]schema.ColumnMeta, error) {
 		col.OrdinalPosition = ordinalPosition.Int32
 		col.IsAutoIncrement = extra.String
 
+		log.Info("column log : %#v", col)
 		result = append(result, col)
 	}
 	return result, nil

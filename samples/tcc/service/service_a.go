@@ -38,6 +38,7 @@ var serviceA = &ServiceA{}
 type TCCProxyServiceA struct {
 	*ServiceA
 
+	// todo 同名try方法，用于设置代理
 	Try func(ctx *context.BusinessActionContext) (bool, error) `TccActionName:"ServiceA"`
 }
 

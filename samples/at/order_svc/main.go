@@ -4,6 +4,8 @@ import (
 	"database/sql"
 	"net/http"
 	"time"
+
+	"github.com/transaction-wg/seata-golang/pkg/util/log"
 )
 
 import (
@@ -12,6 +14,7 @@ import (
 
 import (
 	_ "github.com/transaction-wg/seata-golang/pkg/base/config_center/nacos"
+	_ "github.com/transaction-wg/seata-golang/pkg/base/registry/file"
 	_ "github.com/transaction-wg/seata-golang/pkg/base/registry/nacos"
 	"github.com/transaction-wg/seata-golang/pkg/client"
 	"github.com/transaction-wg/seata-golang/pkg/client/at/exec"
@@ -20,9 +23,13 @@ import (
 	"github.com/transaction-wg/seata-golang/samples/at/order_svc/dao"
 )
 
+// go run main.go  -conConf conf/client.yml
+
 func main() {
 	r := gin.Default()
-	config.InitConf()
+	if err := config.InitConf(); err != nil {
+		panic(err)
+	}
 	client.NewRpcClient()
 	exec.InitDataResourceManager()
 
@@ -54,12 +61,13 @@ func main() {
 		rootContext := &context.RootContext{Context: c}
 		rootContext.Bind(c.Request.Header.Get("XID"))
 
+		log.Info("receive request ")
 		_, err := d.CreateSO(rootContext, q.Req)
 
 		if err != nil {
 			c.JSON(400, gin.H{
 				"success": false,
-				"message": "fail",
+				"message": err.Error(),
 			})
 		} else {
 			c.JSON(200, gin.H{

@@ -27,7 +27,7 @@ var (
 	// session -> applicationID
 	identified_sessions = sync.Map{}
 
-	// applicationID -> ip -> port -> session
+	// todo applicationID -> ip -> port -> session
 	client_sessions = sync.Map{}
 
 	// applicationID -> resourceIDs
@@ -128,6 +128,7 @@ func (manager *GettySessionManager) RegisterRmGettySession(request protocal.Regi
 	ip := getClientIpFromGettySession(session)
 	port := getClientPortFromGettySession(session)
 
+	// todo 注册时，applicationId很重要
 	ipMap, _ := client_sessions.LoadOrStore(request.ApplicationID, &sync.Map{})
 	iMap := ipMap.(*sync.Map)
 	portMap, _ := iMap.LoadOrStore(ip, &sync.Map{})

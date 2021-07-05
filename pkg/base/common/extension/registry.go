@@ -1,6 +1,7 @@
 package extension
 
 import (
+	"fmt"
 	"sync"
 )
 import (
@@ -27,6 +28,8 @@ func SetRegistry(name string, v func() (registry.Registry, error)) {
 		panic("registry: Register called twice for registry " + name)
 	}
 	registries[name] = v
+
+
 }
 
 // GetRegistry finds the registry extension with @name
@@ -35,6 +38,11 @@ func GetRegistry(name string) (registry.Registry, error) {
 	registry := registries[name]
 	registriesMu.RUnlock()
 	if registry == nil {
+		str := ""
+		for key, _ := range registries {
+			str = str + "" + key
+		}
+		panic(fmt.Sprintf("name :%s, registry is %s ", name, str))
 		return nil, errors.Errorf("registry for " + name + " is not existing, make sure you have import the package.")
 	}
 	return registry()

@@ -42,6 +42,7 @@ func (c *RpcClient) init() {
 	if len(addressList) == 0 {
 		log.Warn("no have valid seata server list")
 	}
+	// todo tc server，连接所有的tc server??
 	for _, address := range addressList {
 		gettyClient := getty.NewTCPClient(
 			getty.WithServerAddress(address),
@@ -56,6 +57,7 @@ func (c *RpcClient) init() {
 
 func getAvailServerList() []string {
 	registryConfig := config.GetRegistryConfig()
+
 	reg, err := extension.GetRegistry(registryConfig.Mode)
 	if err != nil {
 		logger.Errorf("Registry can not connect success, program is going to panic.Error message is %s", err.Error())
@@ -94,6 +96,7 @@ func (c *RpcClient) newSession(session getty.Session) error {
 	session.SetName(c.conf.GettyConfig.GettySessionParam.SessionName)
 	session.SetMaxMsgLen(c.conf.GettyConfig.GettySessionParam.MaxMsgLen)
 	session.SetPkgHandler(readwriter.RpcPkgHandler)
+	// todo 设置handler
 	session.SetEventListener(c.rpcHandler)
 	session.SetReadTimeout(c.conf.GettyConfig.GettySessionParam.TcpReadTimeout)
 	session.SetWriteTimeout(c.conf.GettyConfig.GettySessionParam.TcpWriteTimeout)

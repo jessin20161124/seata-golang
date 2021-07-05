@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"io/ioutil"
 	"net/http"
 )
 
@@ -61,6 +62,7 @@ func (svc *Svc) CreateSo(ctx context.Context, rollback bool) error {
 		Req []*dao2.AllocateInventoryReq
 	}
 
+	// 创建订单
 	q1 := &rq1{Req: soMasters}
 	soReq, err := json.Marshal(q1)
 	fmt.Println(string(soReq))
@@ -77,10 +79,16 @@ func (svc *Svc) CreateSo(ctx context.Context, rollback bool) error {
 		return err1
 	}
 
+	// check response
+	body, err := ioutil.ReadAll(result1.Body)
+	if err != nil {
+		return err
+	}
 	if result1.StatusCode == 400 {
-		return errors.New("err")
+		return errors.New(string(body))
 	}
 
+	// 减少库存
 	q2 := &rq2{
 		Req: reqs,
 	}
@@ -112,6 +120,7 @@ var service = &Svc{}
 
 type ProxyService struct {
 	*Svc
+	// todo 代理类从这里调用起，再调用svc中的createSo，根据结果进行提交或者回滚。
 	CreateSo func(ctx context.Context, rollback bool) error
 }
 

@@ -28,6 +28,7 @@ func (svc *Service) TCCCommitted(ctx context.Context) error {
 	}
 	businessActionContextB.ActionContext["hello"] = "hello world,this is from BusinessActionContext B"
 
+	// todo 执行代理方法
 	resultA, err := TccProxyServiceA.Try(businessActionContextA)
 	fmt.Printf("result A is :%v", resultA)
 	if err != nil {

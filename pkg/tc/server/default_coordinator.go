@@ -35,6 +35,7 @@ type DefaultCoordinator struct {
 	conf                   config.ServerConfig
 	core                   TransactionCoordinator
 	idGenerator            atomic.Uint32
+	// todo tc发出去的请求，等待响应
 	futures                *sync.Map
 	timeoutCheckTicker     *time.Ticker
 	retryRollbackingTicker *time.Ticker
@@ -90,6 +91,7 @@ func (coordinator *DefaultCoordinator) sendAsyncRequest(address string, session 
 		Body:        msg,
 	}
 	resp := getty2.NewMessageFuture(rpcMessage)
+	// todo 发送需要响应的请求
 	coordinator.futures.Store(rpcMessage.ID, resp)
 	//config timeout
 	pkgLen, sendLen, err := session.WritePkg(rpcMessage, coordinator.conf.GettyConfig.GettySessionParam.TcpWriteTimeout)
@@ -116,6 +118,7 @@ func (coordinator *DefaultCoordinator) sendAsyncRequest(address string, session 
 }
 
 func (coordinator *DefaultCoordinator) defaultSendResponse(request protocal.RpcMessage, session getty.Session, msg interface{}) {
+	// todo 设置响应，将request.id/codec，compressor带回去
 	resp := protocal.RpcMessage{
 		ID:         request.ID,
 		Codec:      request.Codec,

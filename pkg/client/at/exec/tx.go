@@ -97,6 +97,7 @@ func (tx *Tx) Commit() error {
 			}
 			return errors.WithStack(err)
 		}
+		// todo 将undolog也插入到本地数据库中，一并提交事务；同一个业务db中必须有这个undo_log表
 		err = tx.proxyTx.Commit()
 		if err != nil {
 			err1 := tx.report(false)
@@ -126,10 +127,13 @@ func (tx *Tx) Rollback() error {
 	return err
 }
 
+// todo 只有本地提交或者本地回滚，才会把结果注册到tc，得到分支事务ID
 func (tx *Tx) register() (int64, error) {
 	var branchID int64
 	var err error
 	for retryCount := 0; retryCount < tx.lockRetryTimes; retryCount++ {
+		// todo 会把lockKeys给保存到tc里，lock_table
+		// todo resourceId区分的是本地用的是哪个数据源
 		branchID, err = dataSourceManager.BranchRegister(meta.BranchTypeAT, tx.proxyTx.ResourceID, "", tx.proxyTx.Context.XID,
 			nil, tx.proxyTx.Context.BuildLockKeys())
 		if err == nil {

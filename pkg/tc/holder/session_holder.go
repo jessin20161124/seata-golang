@@ -36,6 +36,7 @@ func Init() {
 	if config.GetStoreConfig().StoreMode == "db" {
 		sessionHolder = SessionHolder{
 			RootSessionManager:             NewDataBaseSessionManager("", config.GetStoreConfig().DBStoreConfig),
+			// todo 异步的都保存到本地map
 			AsyncCommittingSessionManager:  NewDataBaseSessionManager(ASYNC_COMMITTING_SESSION_MANAGER_NAME, config.GetStoreConfig().DBStoreConfig),
 			RetryCommittingSessionManager:  NewDataBaseSessionManager(RETRY_COMMITTING_SESSION_MANAGER_NAME, config.GetStoreConfig().DBStoreConfig),
 			RetryRollbackingSessionManager: NewDataBaseSessionManager(RETRY_ROLLBACKING_SESSION_MANAGER_NAME, config.GetStoreConfig().DBStoreConfig),

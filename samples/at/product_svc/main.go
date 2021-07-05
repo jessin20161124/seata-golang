@@ -13,6 +13,7 @@ import (
 import (
 	_ "github.com/transaction-wg/seata-golang/pkg/base/config_center/nacos"
 	_ "github.com/transaction-wg/seata-golang/pkg/base/registry/nacos"
+	_ "github.com/transaction-wg/seata-golang/pkg/base/registry/file"
 	"github.com/transaction-wg/seata-golang/pkg/client"
 	"github.com/transaction-wg/seata-golang/pkg/client/at/exec"
 	"github.com/transaction-wg/seata-golang/pkg/client/config"
@@ -61,7 +62,7 @@ func main() {
 		if err != nil {
 			c.JSON(400, gin.H{
 				"success": false,
-				"message": "fail",
+				"message": err.Error(),
 			})
 		} else {
 			c.JSON(200, gin.H{

@@ -108,6 +108,7 @@ func WithGsActive(active bool) GlobalSessionOption {
 	}
 }
 
+// todo builder模式
 func NewGlobalSession(opts ...GlobalSessionOption) *GlobalSession {
 	gs := &GlobalSession{
 		BranchSessions: make(map[*BranchSession]bool),

@@ -13,6 +13,7 @@ func (coordinator *DefaultCoordinator) OnTrxMessage(rpcMessage protocal.RpcMessa
 	rpcContext := SessionManager.GetContextFromIdentified(session)
 	log.Debugf("server received:%v,clientIp:%s,vgroup:%s", rpcMessage.Body, session.RemoteAddr(), rpcContext.TransactionServiceGroup)
 
+	// todo 处理收到的消息
 	warpMessage, isWarpMessage := rpcMessage.Body.(protocal.MergedWarpMessage)
 	if isWarpMessage {
 		resultMessage := protocal.MergeResultMessage{Msgs: make([]protocal.MessageTypeAware, 0)}
@@ -28,6 +29,7 @@ func (coordinator *DefaultCoordinator) OnTrxMessage(rpcMessage protocal.RpcMessa
 	}
 }
 
+// todo 核心请求
 func (coordinator *DefaultCoordinator) handleTrxMessage(msg protocal.MessageTypeAware, ctx RpcContext) protocal.MessageTypeAware {
 	switch msg.GetTypeCode() {
 	case protocal.TypeGlobalBegin:

@@ -63,6 +63,7 @@ type RpcRemoteClient struct {
 // OnOpen ...
 func (client *RpcRemoteClient) OnOpen(session getty.Session) error {
 	go func() {
+		// todo 写死全部都是tm
 		request := protocal.RegisterTMRequest{AbstractIdentifyRequest: protocal.AbstractIdentifyRequest{
 			Version:                 client.conf.SeataVersion,
 			ApplicationID:           client.conf.ApplicationID,
@@ -125,6 +126,7 @@ func (client *RpcRemoteClient) OnMessage(session getty.Session, pkg interface{})
 				client.mergeMsgMap.Delete(rpcMessage.ID)
 			}
 		} else {
+			// todo 唤醒发出去的请求，得到响应了
 			resp, loaded := client.futures.Load(rpcMessage.ID)
 			if loaded {
 				response := resp.(*getty2.MessageFuture)
@@ -145,6 +147,7 @@ func (client *RpcRemoteClient) onMessage(rpcMessage protocal.RpcMessage, serverA
 	msg := rpcMessage.Body.(protocal.MessageTypeAware)
 	log.Infof("onMessage: %v", msg)
 	switch msg.GetTypeCode() {
+	// todo 请求提交或者回滚
 	case protocal.TypeBranchCommit:
 		client.BranchCommitRequestChannel <- RpcRMMessage{
 			RpcMessage:    rpcMessage,
@@ -206,6 +209,7 @@ func (client *RpcRemoteClient) sendAsyncRequest(session getty.Session, msg inter
 		Body:        msg,
 	}
 	resp := getty2.NewMessageFuture(rpcMessage)
+	// todo 等待消息响应，直到channel有数据
 	client.futures.Store(rpcMessage.ID, resp)
 	//config timeout
 	_, _, err = session.WritePkg(rpcMessage, time.Duration(0))
@@ -214,6 +218,7 @@ func (client *RpcRemoteClient) sendAsyncRequest(session getty.Session, msg inter
 	}
 	log.Infof("send message : %v,session:%s", rpcMessage, session.Stat())
 
+	// todo 实现超时功能
 	if timeout > time.Duration(0) {
 		select {
 		case <-getty.GetTimeWheel().After(timeout):

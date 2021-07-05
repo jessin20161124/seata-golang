@@ -42,8 +42,8 @@ var (
 )
 
 func init() {
-	fs := flag.NewFlagSet("config", flag.ContinueOnError)
-	fs.StringVar(&confFile, "conConf", os.Getenv(constant.CONF_CLIENT_FILE_PATH), "default client config path")
+	//fs := flag.NewFlagSet("config", flag.ExitOnError)
+	flag.StringVar(&confFile, "conConf", os.Getenv(constant.CONF_CLIENT_FILE_PATH), "default client config path")
 }
 func GetRegistryConfig() config.RegistryConfig {
 	return clientConfig.RegistryConfig
@@ -67,11 +67,13 @@ func GetDefaultClientConfig(applicationID string) ClientConfig {
 		TransactionServiceGroup: "127.0.0.1:8091",
 		GettyConfig:             GetDefaultGettyConfig(),
 		TMConfig:                GetDefaultTmConfig(),
+		RegistryConfig: config.RegistryConfig{Mode: "file"},
 	}
 }
 
 func InitConf() error {
 	var err error
+	flag.Parse()
 
 	if confFile == "" {
 		return errors.New(fmt.Sprintf("application configure file name is nil"))

@@ -14,7 +14,7 @@ import (
 const (
 	CronPeriod = 20e9
 )
-
+// todo 核心监听器
 func (coordinator *DefaultCoordinator) OnOpen(session getty.Session) error {
 	log.Infof("got getty_session:%s", session.Stat())
 	return nil
@@ -31,26 +31,30 @@ func (coordinator *DefaultCoordinator) OnClose(session getty.Session) {
 }
 
 func (coordinator *DefaultCoordinator) OnMessage(session getty.Session, pkg interface{}) {
-	log.Debugf("received message:{%v}", pkg)
+	log.Debugf("received message:{%#v}", pkg)
 	rpcMessage, ok := pkg.(protocal.RpcMessage)
 	if ok {
 		_, isRegTM := rpcMessage.Body.(protocal.RegisterTMRequest)
 		if isRegTM {
+			// todo 收到tm注册消息
 			coordinator.OnRegTmMessage(rpcMessage, session)
 			return
 		}
 
 		heartBeat, isHeartBeat := rpcMessage.Body.(protocal.HeartBeatMessage)
 		if isHeartBeat && heartBeat == protocal.HeartBeatMessagePing {
+			// todo 收到ping请求
 			coordinator.OnCheckMessage(rpcMessage, session)
 			return
 		}
 
+		// todo 收到请求
 		if rpcMessage.MessageType == protocal.MSGTYPE_RESQUEST ||
 			rpcMessage.MessageType == protocal.MSGTYPE_RESQUEST_ONEWAY {
 			log.Debugf("msgID:%s, body:%v", rpcMessage.ID, rpcMessage.Body)
 			_, isRegRM := rpcMessage.Body.(protocal.RegisterRMRequest)
 			if isRegRM {
+				// todo 收到rm注册消息
 				coordinator.OnRegRmMessage(rpcMessage, session)
 			} else {
 				if SessionManager.IsRegistered(session) {
@@ -66,6 +70,7 @@ func (coordinator *DefaultCoordinator) OnMessage(session getty.Session, pkg inte
 				}
 			}
 		} else {
+			// todo 收到响应，唤醒阻塞的goroutine
 			resp, loaded := coordinator.futures.Load(rpcMessage.ID)
 			if loaded {
 				response := resp.(*getty2.MessageFuture)

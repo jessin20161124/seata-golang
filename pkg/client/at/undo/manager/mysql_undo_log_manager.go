@@ -70,6 +70,7 @@ func (manager MysqlUndoLogManager) FlushUndoLogs(tx *proxy_tx.ProxyTx) error {
 	undoLogContent := parser.Encode(branchUndoLog)
 	log.Debugf("Flushing UNDO LOG: %s", string(undoLogContent))
 
+	// todo 插入undolog到本地库中
 	return manager.insertUndoLogWithNormal(tx.Tx, xid, branchID, buildContext(parser.GetName()), undoLogContent)
 }
 

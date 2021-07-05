@@ -12,6 +12,7 @@ import (
 	"github.com/transaction-wg/seata-golang/pkg/util/log"
 )
 
+// todo 全部委托给core处理
 func (coordinator *DefaultCoordinator) doGlobalBegin(request protocal.GlobalBeginRequest, ctx RpcContext) protocal.GlobalBeginResponse {
 	var resp = protocal.GlobalBeginResponse{}
 	xid, err := coordinator.core.Begin(ctx.ApplicationID, ctx.TransactionServiceGroup, request.TransactionName, request.Timeout)

@@ -49,6 +49,7 @@ func (dao *LockStoreDataBaseDao) AcquireLock(lockDOs []*model.LockDO) bool {
 	existedRowKeys := make([]string, 0)
 	unrepeatedLockDOs := make([]*model.LockDO, 0)
 	for _, rowLock := range existedRowLocks {
+		// todo 如果是被自己锁住的，没有问题，但是已经存在锁了，不用再加锁
 		if rowLock.Xid != currentXID {
 			log.Infof("Global lock on [{%s}:{%s}] is holding by xid {%s} branchID {%d}", "lock_table", rowLock.Pk, rowLock.Xid,
 				rowLock.BranchID)
@@ -74,6 +75,7 @@ func (dao *LockStoreDataBaseDao) AcquireLock(lockDOs []*model.LockDO) bool {
 		return true
 	}
 
+	// todo 插入本地事务涉及的数据的锁
 	_, err = dao.engine.Table("lock_table").Insert(unrepeatedLockDOs)
 	if err != nil {
 		log.Errorf("Global locks batch acquire failed, %v", unrepeatedLockDOs)
